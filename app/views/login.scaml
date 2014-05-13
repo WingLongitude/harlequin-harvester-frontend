@@ -1,0 +1,14 @@
+-import play.data.Form._;
+-import controllers._;
+
+#main
+	%body
+		%div{:align=>"center"}
+			%h2 Sign in
+			%form{:name=>"login", :action=>"/login", :method=>"POST", :novalidate => true}
+				%p
+					%input{:type=>"email",:id=>"email",:name=>"email","ng-model"=>"login.email",:placeholder=>"Email"}
+				%p
+					%input{:type=>"password",:id=>"password",:name=>"password","ng-model"=>"login.password",:placeholder=>"Password"}
+				%p
+					%button{:type=>"submit",:class=>"btn btn-primary"} Login

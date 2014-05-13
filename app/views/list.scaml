@@ -1,0 +1,101 @@
+%form{:class=>"navbar-form navbar-right", :role=>"search"}
+	%div{:class=>"form-group"}
+		%input{"type" => "text","ng-model" => "nameFilterDataSet", "placeholder" => "Filter..."}
+%button{:class=>"btn", "ng-click"=>"new()"}
+	%span{:class=>"glyphicon glyphicon-plus"}
+	Add new
+%div{:class=>"panel panel-default"}
+	%table{:class=>"table"}
+		%thead
+			%tr
+				%th
+					%input{:type=>"checkbox","ng-model"=>"areAllDataSetSelected","ng-change"=>"updateDataSetSelection(dataSetsList, areAllDataSetSelected)"}
+				%th
+					Status
+				%th
+					Url
+				%th
+					Name
+				%th
+					Organization
+				%th
+					DataSet UUID
+				%th
+					Organization UUID
+				%th
+					Type
+				%th
+					Country
+				%th
+					User
+				%th
+					Delete
+		%tbody
+			%tr{"ng-repeat"=>"dataSet in dataSetsList | filter: searchFilterDataSet"}
+				%td
+					%div{"ng-class"=>"{hidden : !(dataSet.status=='discovered')}"}
+						%input{:type=>"checkbox","ng-model"=>"dataSet.isSelected"}
+				
+				%td
+					{{dataSet.status}}
+				%td 
+					{{dataSet.url}}
+				%td
+					{{dataSet.name}}
+				%td
+					{{dataSet.organization}}
+				%td
+					{{dataSet.dataSetUUID}}
+				%td 
+					{{dataSet.organizationUUID}}
+				%td
+					{{dataSet.type}}
+				%td
+					{{dataSet.country}}
+				%td
+					{{dataSet.user}}
+				%td
+					%a{:href=>"#","ng-click"=>"delete(dataSet.id)"}
+						delete
+	%footer
+		%div{"id"=> "action", :align=>"right", :style=>"float: right"}
+			%button{:class=>"btn", "ng-click"=>"index()"}
+				%span{:class=>"glyphicon glyphicon-play"}
+				Index
+		
+			
+%script{:type=>"text/ng-template", :id=>"new.html"}
+	%div{:class=>"modal-dialog"}
+		%div{:class=>"modal-content"}
+			%div{:class=>"modal-header"}
+				%button{:type=>"button",:class=>"close","ng-click"=>"cancel()"} &times;
+				%h4{:class=>"modal-title"}
+					Add a DataSet
+			%div{:class=>"modal-body"}
+				%form{:name=>"dataSetNew","ng-submit"=>"saveDataSet(dataSet, 'ajaxSubmitResult1')", :novalidate => true}
+					%input{"ng-model"=>"dataSet.status", :type=>"hidden"}
+					%input{:type=>"hidden", "ng-model"=> "dataSet.user", :value=>''}
+					
+					%div{:class=>"form-group", "ng-class"=>"{'has-error' : dataSetNew.url.$invalid}"}
+						%label Url
+						%input{:type=>"url", :name=>"url",:class=>"form-control","ng-model"=> "dataSet.url",:required => true}
+						%p{"ng-show"=>"dataSetNew.url.$error.required", :class=>"help-inline"} The URL is required
+					
+					%div{:class=>"form-group", "ng-class"=>"{'has-error' : dataSetNew.name1.$invalid}"}
+						%label Name
+						%input{:type=>"text", :name=>"name1", "ng-model"=> "dataSet.name",:required => true}
+						%p{"ng-show"=>"dataSetNew.name1.$error.required", :class=>"help-inline"} The Name is required
+					
+					%div{:class=>"form-group"}
+						%label Organization UUID
+						%input{:type=>"text", :name=>"organizationUUID1","ng-model"=> "dataSet.organizationUUID", :required => false}
+					
+					%div{:class=>"form-group", "ng-class"=>"{'has-error' : dataSetNew.country.$invalid}"}
+						%label Country
+						%select{:id=>"countries", "ng-init"=>"dataSet.country = countriesArray[0]" , "ng-model"=>"dataSet.country", "ng-options"=>"country for country in countriesArray",:required => true}
+							%option{:value=>""}
+						%p{"ng-show"=>"dataSetNew.country.$error.required", :class=>"help-inline"} The Country is required
+					
+					%div{:class => "modal-footer"}
+						%button{:type=>"button",:class=>"btn btn-default","ng-click"=>"cancel()"} Close
+						%button{:type=>"submit",:class=>"btn btn-primary", "ng-disabled"=>"dataSetNew.$invalid"} Save changes
