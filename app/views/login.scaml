@@ -3,12 +3,20 @@
 
 #main
 	%body
-		%div{:align=>"center"}
-			%h2 Sign in
-			%form{:name=>"login", :action=>"/login", :method=>"POST", :novalidate => true}
-				%p
-					%input{:type=>"email",:id=>"email",:name=>"email","ng-model"=>"login.email",:placeholder=>"Email"}
-				%p
-					%input{:type=>"password",:id=>"password",:name=>"password","ng-model"=>"login.password",:placeholder=>"Password"}
-				%p
-					%button{:type=>"submit",:class=>"btn btn-primary"} Login
+		%div{:class=>"container"}
+			%div{:class=>"row"}
+				%div{:class=>"col-md-4 col-md-offset-4"}
+					%div{:class=>"panel panel-default"}
+						%div{:class=>"panel-heading"}
+							%strong{:class=>""} Sign in
+						%div{:class=>"panel-body"}
+							%form{:class=>"form-horizontal", :role=>"form", :name=>"login", :action=>"/login", :method=>"POST", :novalidate => true}
+								%div{:class=>"col-sm-9"}
+									%p
+										%input{:class=>"form-control", :type=>"email",:id=>"email",:name=>"email","ng-model"=>"login.email",:placeholder=>"Email"}
+								%div{:class=>"col-sm-9"}
+									%p
+										%input{:class=>"form-control", :type=>"password",:id=>"password",:name=>"password","ng-model"=>"login.password",:placeholder=>"Password"}
+								%div{:class=>"col-sm-9"}
+									%p
+										%button{:type=>"submit",:class=>"btn btn-primary"} Login

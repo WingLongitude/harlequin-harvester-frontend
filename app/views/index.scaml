@@ -23,15 +23,19 @@
 							%span{:class=>"icon-bar"}
 						%a{:class=>"navbar-brand", :href=>"#"}
 							SIB INDEXER APP
+					%p{:class=>"navbar-text pull-right"}
+						#{userEmail} 
+						%a{:href=>"/logout"} Logout
 					%div{:class=>"collapse navbar-collapse",:id=>"bs-example-navbar-collapse-1"}
 						%ul{:class=>"nav navbar-nav navbar-right"}
 							%li{:class=>"active"}
 								%a{:href=>"#", :class=>"list"}
+									%span{:class=>"glyphicon glyphicon-th-list"}
 									List
 							%li
 								%a{:href=>"#stats", :class=>"stats"}
+									%span{:class=>"glyphicon glyphicon-stats"}
 									Stats
-					#{userEmail} 
-					%a{:href=>"/logout"} Logout
+					
 			%div{:id=>"main"}
 				%div{"ng-view"=>""}

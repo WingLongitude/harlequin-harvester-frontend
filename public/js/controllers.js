@@ -93,15 +93,16 @@ var sibIndexerApp = angular.module('sibIndexerApp.controllers', []);
     };
     
     $scope.index = function() {
-    	var dataSetsToIndex = [];
+    	var dataSetsIdsToIndex = [];
 		for (var i = 0; i < $scope.dataSetsList.length; i++)
 		{
 			if($scope.dataSetsList[i].isSelected==true &&  $scope.dataSetsList[i].status == 'discovered'){
 				$scope.dataSetsList[i].status = 'Indexing';
-				dataSetsToIndex.push($scope.dataSetsList[i]);
+				dataSetsIdsToIndex.push($scope.dataSetsList[i].id);
 			}
 			$scope.dataSetsList[i].isSelected=false;
 		}
+		var dataSetsToIndex = [dataSetsIdsToIndex, email];
 		alert(dataSetsToIndex);
 	};
   });
