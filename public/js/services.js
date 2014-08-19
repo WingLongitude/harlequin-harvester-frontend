@@ -1,29 +1,75 @@
 angular.module('sibIndexerApp.services', []).
-  factory('collectorAPIservice', function($http, $q) {
+  service('collectorAPIservice', function($http, $q) {
 
-    var collectorAPI = {};
-
-    collectorAPI.getDataSets = function() {
-    	apiPath:'http://ergast.com/api/f1/2013/driverStandings.json?callback=JSON_CALLBACK';
-    	
-    	//Creating a deferred object
-        var deferred = $q.defer();
- 
-        //Calling Web API to fetch shopping cart items
-        $http({
-        	method: 'JSONP', 
-        	url: 'http://ergast.com/api/f1/2013/driverStandings.json?callback=JSON_CALLBACK'
-      }).success(function(data){
-	         //Passing data to deferred's resolve function on successful completion
-	          deferred.resolve(data);
-      }).error(function(){
-	        //Sending a friendly error message in case of failure
-	        deferred.reject("An error occured while fetching items");
+	return({
+		getDataSets: getDataSets,
+		deleteDataSet: deleteDataSet,
+		saveDataSet: saveDataSet,
+		index: index,
+		discover: discover
+    });
+                
+    function getDataSets() {
+        //Calling Web API 
+        var request = $http({
+        	url: 'http://192.168.16.119:9000/resource',
+        	method: 'GET', 
+        	headers: {'Content-Type': 'application/json; charset=utf-8'}
       });
- 
-      //Returning the promise object
-      return deferred.promise;
+      //Returning 
+     return(request.then( handleSuccess, handleError ) );
+    }
+
+    function deleteDataSet(dataSet){
+        //Calling Web API 
+    	var request = $http({ method: 'DELETE',
+    			url: 'http://192.168.16.119:9000/resource/' + encodeURIComponent(dataSet.url)
+    	});
+    	//Returning 
+     	return(request.then(handleSuccess,handleError));
     }
     
-    return collectorAPI;
-  });
+    function saveDataSet(dataSet) {
+      	var request = $http({
+      		method : "POST", 
+      		url : "http://192.168.16.119:9000/resource",
+      		data : dataSet, 
+      		headers: {'Content-Type': 'application/json'}
+      	});
+        //Returning 
+     	return(request.then( handleSuccess, handleError ) );
+    }
+    
+    function index(dataSetsToIndex) {
+      	var request = $http({
+      		method : "POST", 
+      		url : "http://192.168.16.119:9000/index",
+      		data : dataSetsToIndex, 
+      		headers: {'Content-Type': 'application/json'}
+      	});
+        //Returning 
+     	return(request.then( handleSuccess, handleError ) );
+    }
+    
+    function discover() {
+      	var request = $http({
+      		method : "POST", 
+      		url : "http://192.168.16.119:9000/discover",
+      		headers: {'Content-Type': 'application/json'}
+      	});
+        //Returning 
+     	return(request.then( handleSuccess, handleError ) );
+    }
+
+  function handleError( response ) {
+	if (!angular.isObject(response.data)|| !response.data.message){
+		return( $q.reject("An unknown error occurred."));
+    }
+    return($q.reject(response.data.message));
+  }
+ 
+
+  function handleSuccess(response) {
+	return(response.data);
+  }
+});

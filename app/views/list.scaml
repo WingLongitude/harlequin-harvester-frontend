@@ -3,8 +3,11 @@
 		%button{:class=>"btn btn-sm", "ng-click"=>"new()"}
 			%span{:class=>"glyphicon glyphicon-plus"}
 			Add new
+		%button{:class=>"btn btn-sm", "ng-click"=>"discover()"}
+			%span{:class=>"glyphicon glyphicon-magnet"}
+			Discover
 		%button{:class=>"btn btn-sm", "ng-click"=>"index()"}
-			%span{:class=>"glyphicon glyphicon-play"}
+			%span{:class=>"glyphicon glyphicon-send"}
 			Index
 		%form{:class=>"navbar-form navbar-right", :role=>"search"}
 			%div{:class=>"form-group"}
@@ -63,8 +66,9 @@
 				%td
 					{{dataSet.user}}
 				%td
-					%a{:href=>"#","ng-click"=>"delete(dataSet.id)"}
+					%a{"ng-click"=>"drop(dataSet)"}
 						delete
+	{{error}}
 
 %script{:type=>"text/ng-template", :id=>"new.html"}
 	%div{:class=>"modal-dialog"}

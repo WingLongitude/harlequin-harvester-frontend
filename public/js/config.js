@@ -1,6 +1,6 @@
 var sibIndexerApp = angular.module('sibIndexerApp.config', ["ngRoute"]);
 
-sibIndexerApp.config(function($routeProvider) {
+sibIndexerApp.config(function($routeProvider,$httpProvider) {
 		$routeProvider
 
 			// route for the home page
@@ -13,4 +13,7 @@ sibIndexerApp.config(function($routeProvider) {
 				templateUrl : '/stats',
 				controller  : 'dataSetsController'
 			});
-	});
+			
+		$httpProvider.defaults.useXDomain = true;
+		delete $httpProvider.defaults.headers.common['X-Requested-With'];
+});

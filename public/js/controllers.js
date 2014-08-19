@@ -1,35 +1,16 @@
-var sibIndexerApp = angular.module('sibIndexerApp.controllers', []);
+var sibIndexerApp = angular.module('sibIndexerApp.controllers',[]);
 
-  sibIndexerApp.controller('dataSetsController', function($scope, $modal, collectorAPIservice) {
-   
-  
-   $scope.nameFilterDataSet = null;
-   
-   $scope.areAllDataSetSelected = false;
+sibIndexerApp.controller('dataSetsController',function($scope, $modal, collectorAPIservice){
+	$scope.nameFilterDataSet = null;
 
-   $scope.dataSetsList = [];
+	$scope.areAllDataSetSelected = false;
 
-   collectorAPIservice.getDataSets().then(function(response) {
-        
-        //dataSetsListEx = response;
-        
-        dataSetsListEx = [
-		{
-			id: 1,
-			url: "http://ejemplo.com",
-			name: "Ejemplo",
-			organization: "Organización de Ejemplo",
-			dataSetUUID: "xxxx",
-			organizationUUID:"xxxx",
-			type:"eje",
-			user: 'pepito@pinguino.com',
-			status:"discovered",
-			country:"Colombia"
-		}
-		];
+	$scope.dataSetsList = [];
+
+	collectorAPIservice.getDataSets().then(function(response){
+		dataSetsListEx = response;
 	
-        for (var i = 0; i < dataSetsListEx.length; i++)
-		{
+		for (var i = 0; i < dataSetsListEx.length; i++){
 			dataSet = {
 				id: dataSetsListEx[i].id,
 				url: dataSetsListEx[i].url,
@@ -39,26 +20,25 @@ var sibIndexerApp = angular.module('sibIndexerApp.controllers', []);
 				organizationUUID: dataSetsListEx[i].organizationUUID,
 				type: dataSetsListEx[i].type,
 				user: dataSetsListEx[i].user,
-				status: dataSetsListEx[i].status,
+				status: "discovered",
 				country: dataSetsListEx[i].country,
 				isSelected:false}
 			$scope.dataSetsList.push(dataSet);
 		}
-		
-    },function(errorMessage){
-      $scope.error=errorMessage;
-  });
+	},function(errorMessage){
+		$scope.error=errorMessage;
+	});
+
 	
 	$scope.updateDataSetSelection = function (dataSetArray, selectionValue) {
-		for (var i = 0; i < dataSetArray.length; i++)
-		{
+		for (var i = 0; i < dataSetArray.length; i++){
 			dataSetArray[i].isSelected = selectionValue;
 		}
 	};
 	
 	$scope.searchFilterDataSet = function (dataSet) {
-	    var keyword = new RegExp($scope.nameFilterDataSet, 'i');
-	    return !$scope.nameFilterDataSet || keyword.test(dataSet.url) || keyword.test(dataSet.name) || keyword.test(dataSet.organization);
+		var keyword = new RegExp($scope.nameFilterDataSet, 'i');
+		return !$scope.nameFilterDataSet || keyword.test(dataSet.url) || keyword.test(dataSet.name) || keyword.test(dataSet.organization);
 	};
 	
 	$scope.new = function() {
@@ -74,73 +54,70 @@ var sibIndexerApp = angular.module('sibIndexerApp.controllers', []);
 				}
 			}
 		});
-		
-		modalInstance.result.then(function(dataSet){
-			$scope.dataSetsList.push(dataSet);	
+		modalInstance.result.then(function(response){
+			$scope.error="";
 		});
 	};
 	
-	$scope.delete = function(id) {
+	$scope.drop = function(dataSet){
+		collectorAPIservice.deleteDataSet(dataSet).then(function(response){
+			if(response.code==200){
+				var index = $scope.dataSetsList.indexOf(dataSet);
+				if (index != -1) {
+					$scope.dataSetsList.splice(index,1);
+				}
+			}
+    	},function(errorMessage){
+			$scope.error=errorMessage;
+  		});
+  	};
          
-        //search contact with given id and delete it
-        for(i in $scope.dataSetsList) {
-            if($scope.dataSetsList[i].id == id) {
-                $scope.dataSetsList.splice(i,1);
-                $scope.dataSet = {};
-            }
-        }
-         
-    };
-    
-    $scope.index = function() {
+    $scope.index = function(){
     	var dataSetsIdsToIndex = [];
 		for (var i = 0; i < $scope.dataSetsList.length; i++)
 		{
 			if($scope.dataSetsList[i].isSelected==true &&  $scope.dataSetsList[i].status == 'discovered'){
 				$scope.dataSetsList[i].status = 'Indexing';
-				dataSetsIdsToIndex.push($scope.dataSetsList[i].id);
+				dataSetsIdsToIndex.push($scope.dataSetsList[i].url);
 			}
 			$scope.dataSetsList[i].isSelected=false;
 		}
 		var dataSetsToIndex = [dataSetsIdsToIndex, email];
-		alert(dataSetsToIndex);
+		collectorAPIservice.index(dataSetsToIndex).then(function(response){
+			alert(response.message);
+		});
+    },function(errorMessage){
+    	$scope.error=errorMessage;
 	};
-  });
   
-  sibIndexerApp.controller('ModalInstanceCtrl', ['$scope', '$modalInstance', '$http','dataSetsList', 'userEmail' ,function($scope, $modalInstance, $http, dataSetsList, userEmail){
-	  
-	  $scope.dataSetsList = dataSetsList;
-	  
-	  $scope.dataSet ={};
-	  
-	  $scope.dataSet.status = "discovering";
-	  
-	  $scope.dataSet.user = email;
-	  
-	  $scope.countriesArray = ['Colombia','Example'];
-	  
-	  $scope.saveDataSet = function (dataSet, resultVarName) {
-
-	  	var config ={
-	  		params:{
-	  			dataSet: dataSet
-	  		}
-	  	}
-	  	
-      	$http.post("server.php", null, config)
-        .success(function (data, status, headers, config)
-        {
-          $scope[resultVarName] = data;
-        })
-        .error(function (data, status, headers, config)
-        {
-          $scope[resultVarName] = "SUBMIT ERROR";
-        });
-	  	$modalInstance.close($scope.dataSet);
-	  };
+   $scope.discover = function(){
+		collectorAPIservice.discover().then(function(response){
+			alert(response.message);
+		});
+    },function(errorMessage){
+		$scope.error=errorMessage;
+	};
+});
+  
+sibIndexerApp.controller('ModalInstanceCtrl', ['$scope', '$modalInstance', '$http','dataSetsList' , 'collectorAPIservice' ,function($scope, $modalInstance, $http, dataSetsList, collectorAPIservice){
+	$scope.dataSetsList = dataSetsList;
+	$scope.dataSet ={};
+	$scope.dataSet.user = email;
+	$scope.countriesArray = ['Colombia','Example'];
+	$scope.saveDataSet = function (dataSet) {
+		collectorAPIservice.saveDataSet(dataSet).then(function(response){
+			if(response.code==400){
+				alert(response.message);
+			}else{
+				$scope.dataSetsList.push(dataSet);
+			}
+			$modalInstance.close(response.data);
+		},function(errorMessage){
+			$scope.error=errorMessage;
+		}
+	)};
 	
-	  $scope.cancel = function () {
-	    $modalInstance.dismiss('cancel');
-	  };
-  
-  }]);
+	$scope.cancel = function () {
+		$modalInstance.dismiss('cancel');
+	};
+}]);
